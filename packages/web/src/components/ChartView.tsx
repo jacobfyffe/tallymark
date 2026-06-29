@@ -29,7 +29,7 @@ export function ChartView({ scope }: { scope: { kind: 'global' } | { kind: 'pers
   }, [scope.kind, scope.kind === 'personal' ? scope.userId : '']);
 
   if (status === 'loading') {
-    return <div className="state">Loading the chart…</div>;
+    return <div className="state">Reading the tallies…</div>;
   }
   if (status === 'error') {
     return (
@@ -52,7 +52,7 @@ export function ChartView({ scope }: { scope: { kind: 'global' } | { kind: 'pers
     <>
       <div className="chart-meta">
         <span>Week of {data.week_start}</span>
-        <span>{data.entries.length} entries</span>
+        <span>{data.entries.length} on the chart</span>
       </div>
       {data.entries.map((e) => (
         <ChartRow key={`${e.rank}-${e.title}`} entry={e} />

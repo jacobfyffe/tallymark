@@ -20,6 +20,8 @@ export interface ChartEntry {
   movement: 'new' | 'up' | 'down' | 'steady';
   /** Positions moved (positive = up). Null for new entries. */
   movement_amount: number | null;
+  /** Album cover URL (from the captured Spotify payload), if available. */
+  image_url: string | null;
 }
 
 /** The two most recent charted weeks for a scope (this week + last, for movement). */
@@ -60,6 +62,7 @@ export async function getLatestChart(scope: ScopeLabel): Promise<ChartResponse> 
     peak_position: string;
     weeks_on_chart: string;
     last_rank: string | null;
+    image_url: string | null;
   }>(
     `WITH scoped AS (
        SELECT ce.work_id, ce.rank, ce.play_count, cw.week_start
@@ -78,15 +81,31 @@ export async function getLatestChart(scope: ScopeLabel): Promise<ChartResponse> 
      last_week AS (
        SELECT s.work_id, s.rank
          FROM scoped s WHERE s.week_start = $3
+     ),
+     -- A representative album image per work: reach from the work's recordings
+     -- back to any play, and pull the largest cover (index 0) out of the raw
+     -- Spotify payload that was captured at ingest time.
+     art AS (
+       SELECT rw.work_id,
+              (SELECT p.raw -> 'track' -> 'album' -> 'images' -> 0 ->> 'url'
+                 FROM plays p
+                 JOIN play_resolutions pr2 ON pr2.play_id = p.id
+                 JOIN recording_works rw2 ON rw2.canonical_recording_id = pr2.canonical_recording_id
+                WHERE rw2.work_id = rw.work_id
+                  AND p.raw -> 'track' -> 'album' -> 'images' -> 0 ->> 'url' IS NOT NULL
+                LIMIT 1) AS image_url
+         FROM (SELECT DISTINCT work_id FROM this_week) rw
      )
      SELECT tw.work_id, tw.rank, tw.play_count,
             w.title, w.artist_name,
             h.peak_position, h.weeks_on_chart,
-            lw.rank AS last_rank
+            lw.rank AS last_rank,
+            art.image_url
        FROM this_week tw
        JOIN works w ON w.id = tw.work_id
        JOIN hist h ON h.work_id = tw.work_id
        LEFT JOIN last_week lw ON lw.work_id = tw.work_id
+       LEFT JOIN art ON art.work_id = tw.work_id
       ORDER BY tw.rank`,
     [scope, thisWeek, lastWeek],
   );
@@ -118,6 +137,7 @@ export async function getLatestChart(scope: ScopeLabel): Promise<ChartResponse> 
       weeks_on_chart: Number(r.weeks_on_chart),
       movement,
       movement_amount,
+      image_url: r.image_url,
     };
   });
 

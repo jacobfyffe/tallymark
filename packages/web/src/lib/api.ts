@@ -11,6 +11,7 @@ export interface ChartEntry {
   weeks_on_chart: number;
   movement: Movement;
   movement_amount: number | null;
+  image_url: string | null;
 }
 
 export interface ChartResponse {

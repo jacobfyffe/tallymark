@@ -5,8 +5,7 @@ import './styles/app.css';
 
 type Tab = 'global' | 'personal' | 'admin';
 
-// With a single user today, the personal chart uses user #1. When auth/multiple
-// users arrive, this becomes a real selection.
+// One user today; personal uses user #1. Becomes a real selection with auth.
 const PERSONAL_USER_ID = '1';
 
 export function App() {
@@ -15,10 +14,19 @@ export function App() {
   return (
     <div className="shell">
       <header className="masthead">
-        <h1>
-          <span className="the">The</span> Chart
-        </h1>
-        <div className="tagline">Your week in music · ranked</div>
+        <div className="brand">
+          <span className="tallymark-glyph" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span className="slash" />
+          </span>
+          <h1>
+            Tally<span className="mark">mark</span>
+          </h1>
+        </div>
+        <div className="tagline">A running tally of what you play</div>
       </header>
 
       <nav className="tabs">
