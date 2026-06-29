@@ -1,0 +1,32 @@
+{
+  "name": "@tallymark/charts",
+  "version": "0.1.0",
+  "description": "Computes weekly charts (rank, peak, weeks-on-chart) and the live in-progress chart from canonical tally data.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "chart": "node dist/charting/run.js",
+    "chart:dev": "tsx src/charting/run.ts",
+    "show": "tsx src/charting/show.ts",
+    "live": "tsx src/charting/live.ts",
+    "migrate": "node dist/db/migrate.js",
+    "migrate:dev": "tsx src/db/migrate.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@tallymark/db": "*",
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

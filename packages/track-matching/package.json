@@ -1,0 +1,32 @@
+{
+  "name": "@tallymark/track-matching",
+  "version": "0.1.0",
+  "description": "Resolves raw tallies into canonical recordings and works (ISRC, fuzzy, version-tag grouping, manual review).",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "resolve": "node dist/matching/run.js",
+    "resolve:dev": "tsx src/matching/run.ts",
+    "override": "tsx src/matching/override.ts",
+    "review": "tsx src/matching/review.ts",
+    "migrate": "node dist/db/migrate.js",
+    "migrate:dev": "tsx src/db/migrate.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@tallymark/db": "*",
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

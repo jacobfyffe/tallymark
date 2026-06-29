@@ -1,0 +1,24 @@
+{
+  "name": "@tallymark/orchestrator",
+  "version": "0.1.0",
+  "description": "The always-on process that runs the Tallymark pipeline on a schedule: capture tallies, resolve them, and compute charts.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tallymark/db": "*",
+    "@tallymark/scrobbler": "*",
+    "@tallymark/track-matching": "*",
+    "@tallymark/charts": "*",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

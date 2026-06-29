@@ -1,0 +1,14 @@
+{
+  "name": "tallymark",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["shared/*", "packages/*", "apps/*"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "orchestrator:dev": "npm run dev --workspace @tallymark/orchestrator"
+  }
+}
