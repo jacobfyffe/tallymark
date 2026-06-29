@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import { NavLink, Routes, Route } from 'react-router-dom';
 import { ChartView } from './components/ChartView';
 import { AdminView } from './components/AdminView';
+import { ArtistPage } from './components/ArtistPage';
+import { SongPage } from './components/SongPage';
+import { SearchBar } from './components/SearchBar';
+import { SearchPage } from './components/SearchPage';
 import './styles/app.css';
-
-type Tab = 'global' | 'personal' | 'admin';
 
 // One user today; personal uses user #1. Becomes a real selection with auth.
 const PERSONAL_USER_ID = '1';
 
-export function App() {
-  const [tab, setTab] = useState<Tab>('global');
+function tabClass({ isActive }: { isActive: boolean }): string {
+  return `tab${isActive ? ' active' : ''}`;
+}
 
+export function App() {
   return (
     <div className="shell">
       <header className="masthead">
@@ -30,20 +34,30 @@ export function App() {
       </header>
 
       <nav className="tabs">
-        <button className={`tab${tab === 'global' ? ' active' : ''}`} onClick={() => setTab('global')}>
+        <NavLink to="/" end className={tabClass}>
           Global
-        </button>
-        <button className={`tab${tab === 'personal' ? ' active' : ''}`} onClick={() => setTab('personal')}>
+        </NavLink>
+        <NavLink to="/personal" className={tabClass}>
           Personal
-        </button>
-        <button className={`tab${tab === 'admin' ? ' active' : ''}`} onClick={() => setTab('admin')}>
+        </NavLink>
+        <NavLink to="/admin" className={tabClass}>
           Admin
-        </button>
+        </NavLink>
       </nav>
 
-      {tab === 'global' && <ChartView scope={{ kind: 'global' }} />}
-      {tab === 'personal' && <ChartView scope={{ kind: 'personal', userId: PERSONAL_USER_ID }} />}
-      {tab === 'admin' && <AdminView />}
+      <SearchBar />
+
+      <Routes>
+        <Route path="/" element={<ChartView scope={{ kind: 'global' }} />} />
+        <Route
+          path="/personal"
+          element={<ChartView scope={{ kind: 'personal', userId: PERSONAL_USER_ID }} />}
+        />
+        <Route path="/admin" element={<AdminView />} />
+        <Route path="/artist/:id" element={<ArtistPage personalUserId={PERSONAL_USER_ID} />} />
+        <Route path="/song/:id" element={<SongPage personalUserId={PERSONAL_USER_ID} />} />
+        <Route path="/search" element={<SearchPage />} />
+      </Routes>
     </div>
   );
 }

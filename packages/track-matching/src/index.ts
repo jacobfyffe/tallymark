@@ -2,3 +2,4 @@
 export { runTier1Resolution } from './matching/tier1.js';
 export { runFuzzyMatching } from './matching/fuzzy.js';
 export { runWorksGrouping } from './matching/tier2.js';
+export { runArtistLinking } from './matching/artist-linking.js';

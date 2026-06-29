@@ -1,7 +1,12 @@
 import { config } from './config.js';
 import { query, closePool, log } from '@tallymark/db';
 import { getAccountsToPoll, ingestAccount } from '@tallymark/scrobbler';
-import { runTier1Resolution, runFuzzyMatching, runWorksGrouping } from '@tallymark/track-matching';
+import {
+  runTier1Resolution,
+  runFuzzyMatching,
+  runWorksGrouping,
+  runArtistLinking,
+} from '@tallymark/track-matching';
 import { computeCharts } from '@tallymark/charts';
 
 /**
@@ -11,9 +16,9 @@ import { computeCharts } from '@tallymark/charts';
  *
  * Two loops:
  *   - Pipeline loop (fast, ~60s): capture new tallies from Spotify, then
- *     resolve them into canonical recordings + works. Because charts are
- *     computed on read (the live chart) and on the finalize loop, fresh tallies
- *     flow through automatically.
+ *     resolve them into canonical recordings + works, then derive artist
+ *     credit. Because charts are computed on read (the live chart) and on the
+ *     finalize loop, fresh tallies flow through automatically.
  *   - Finalize loop (slow, ~1h): recompute finalized charts for the global
  *     scope and every user's personal scope. computeCharts self-detects
  *     completed weeks and is idempotent, so running it repeatedly simply picks
@@ -40,10 +45,13 @@ async function runPipelineCycle(): Promise<void> {
     }
   }
 
-  // 2. Resolve: ISRC -> fuzzy -> works grouping. Each is idempotent.
+  // 2. Resolve: ISRC -> fuzzy -> works grouping -> artist linking. Each is
+  // idempotent, and artist linking runs last since it depends on works
+  // already being assigned.
   const tier1 = await runTier1Resolution();
   const fuzzy = await runFuzzyMatching();
   const works = await runWorksGrouping();
+  const artists = await runArtistLinking();
 
   log.info('Pipeline cycle complete', {
     accountsPolled: accounts.length,
@@ -51,6 +59,8 @@ async function runPipelineCycle(): Promise<void> {
     tier1Resolved: tier1,
     fuzzyProcessed: fuzzy.processed,
     worksAssigned: works.assigned,
+    artistsUpserted: artists.artistsUpserted,
+    artistLinksUpserted: artists.linksUpserted,
   });
 }
 

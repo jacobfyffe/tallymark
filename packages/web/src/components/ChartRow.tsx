@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import type { ChartEntry } from '../lib/api';
 import { TallyMarks } from './TallyMarks';
+import { ArtistLinks } from './ArtistLinks';
 
 /**
  * A chart row: rank, movement, album art, track, and the tally-mark play count.
@@ -14,8 +16,12 @@ export function ChartRow({ entry }: { entry: ChartEntry }) {
       <Movement entry={entry} />
       <Cover entry={entry} />
       <div className="meta">
-        <div className="title">{entry.title}</div>
-        <div className="artist">{entry.artist_name}</div>
+        <Link className="title title-link" to={`/song/${entry.work_id}`}>
+          {entry.title}
+        </Link>
+        <div className="artist">
+          <ArtistLinks artists={entry.artists} />
+        </div>
       </div>
       <div className="stats">
         <TallyMarks count={entry.play_count} />

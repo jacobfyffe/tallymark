@@ -1,6 +1,9 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
 import {
-  getLatestChart,
+  getChart,
+  getArtist,
+  getWork,
+  search,
   listWorks,
   mergeWorks,
   splitWork,
@@ -9,11 +12,14 @@ import {
 /**
  * API routes.
  *
- *   GET  /api/charts/global               latest global chart (with movement)
- *   GET  /api/charts/personal/:userId     latest personal chart
- *   GET  /api/works?search=...            works list for the admin view
- *   POST /api/admin/merge                 { sourceWorkId, targetWorkId }
- *   POST /api/admin/split                 { workId }
+ *   GET  /api/charts/global?week=YYYY-MM-DD           a chart week (defaults to latest)
+ *   GET  /api/charts/personal/:userId?week=YYYY-MM-DD same, for a personal chart
+ *   GET  /api/artists/:id?personalUserId              an artist's global + personal chart history
+ *   GET  /api/works/:id?personalUserId                 one song's global + personal chart history
+ *   GET  /api/search?q=...                             artists + songs matching a term
+ *   GET  /api/works?search=...                        works list for the admin view
+ *   POST /api/admin/merge                              { sourceWorkId, targetWorkId }
+ *   POST /api/admin/split                               { workId }
  *
  * Note: the live (in-progress week) chart is computed by the charts engine, not
  * stored, so it's not served here yet — the web app shows finalized charts. A
@@ -27,8 +33,9 @@ function wrap(fn: (req: Request, res: Response) => Promise<void>) {
 
 api.get(
   '/charts/global',
-  wrap(async (_req, res) => {
-    res.json(await getLatestChart('global'));
+  wrap(async (req, res) => {
+    const week = typeof req.query.week === 'string' ? req.query.week : undefined;
+    res.json(await getChart('global', week));
   }),
 );
 
@@ -36,15 +43,59 @@ api.get(
   '/charts/personal/:userId',
   wrap(async (req, res) => {
     const userId = req.params.userId;
-    res.json(await getLatestChart(`personal:${userId}`));
+    const week = typeof req.query.week === 'string' ? req.query.week : undefined;
+    res.json(await getChart(`personal:${userId}`, week));
+  }),
+);
+
+api.get(
+  '/artists/:id',
+  wrap(async (req, res) => {
+    const artistId = req.params.id;
+    // The currently-viewing user's personal chart, for the "Personal" section.
+    // Hardcoded to user #1 today (same as the rest of the app, until there's
+    // real auth) but accepts an override via query string.
+    const personalUserId = typeof req.query.personalUserId === 'string' ? req.query.personalUserId : '1';
+    const result = await getArtist(artistId, personalUserId);
+    if (!result.artist) {
+      res.status(404).json({ error: 'Artist not found' });
+      return;
+    }
+    res.json(result);
+  }),
+);
+
+api.get(
+  '/works/:id',
+  wrap(async (req, res) => {
+    const workId = req.params.id;
+    const personalUserId = typeof req.query.personalUserId === 'string' ? req.query.personalUserId : '1';
+    const result = await getWork(workId, personalUserId);
+    if (!result.work) {
+      res.status(404).json({ error: 'Song not found' });
+      return;
+    }
+    res.json(result);
+  }),
+);
+
+api.get(
+  '/search',
+  wrap(async (req, res) => {
+    const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+    if (!q) {
+      res.json({ artists: [], works: [] });
+      return;
+    }
+    res.json(await search(q));
   }),
 );
 
 api.get(
   '/works',
   wrap(async (req, res) => {
-    const search = typeof req.query.search === 'string' ? req.query.search : null;
-    res.json(await listWorks(search, 200));
+    const searchTerm = typeof req.query.search === 'string' ? req.query.search : null;
+    res.json(await listWorks(searchTerm, 200));
   }),
 );
 
