@@ -18,8 +18,18 @@ function asInt(v: string, name: string): number {
 export const config = {
   env: optional('NODE_ENV', 'development'),
   port: asInt(optional('PORT', '4000'), 'PORT'),
-  // Shared database with all prior phases.
   databaseUrl: required('DATABASE_URL'),
-  // Allowed origin for the frontend dev server (CORS).
   corsOrigin: optional('CORS_ORIGIN', 'http://localhost:5173'),
+
+  // Spotify OAuth — needed so the web-server can connect user accounts.
+  // Use the same Spotify app (client_id/secret) as the scrobbler.
+  // The redirect URI must point through the Vite proxy: localhost:5173/callback/spotify.
+  spotify: {
+    clientId: required('SPOTIFY_CLIENT_ID'),
+    clientSecret: required('SPOTIFY_CLIENT_SECRET'),
+    redirectUri: optional('SPOTIFY_REDIRECT_URI', 'http://localhost:5173/callback/spotify'),
+  },
+
+  // Session secret — any long random string. Change before deploying to prod.
+  sessionSecret: required('SESSION_SECRET'),
 } as const;

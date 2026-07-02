@@ -31,6 +31,20 @@ body { background: var(--ink); color: var(--paper); font-family: var(--body); li
 
 .shell { max-width: 880px; margin: 0 auto; padding: 0 24px 96px; }
 
+/* Masthead row (tagline + sign-out) */
+.masthead-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 12px; }
+.logout-btn { font-family: var(--display); font-weight: 500; font-size: 12px; background: none; border: 1px solid var(--hairline); border-radius: 6px; color: var(--paper-dim); padding: 5px 12px; cursor: pointer; transition: all 0.15s ease; }
+.logout-btn:hover { color: var(--paper); border-color: var(--hairline-strong); }
+
+/* Login page */
+.login-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-card { max-width: 420px; width: 100%; text-align: center; }
+.login-brand { justify-content: center; margin-bottom: 28px; }
+.login-tagline { color: var(--paper-dim); font-size: 15px; line-height: 1.6; margin-bottom: 32px; }
+.btn-spotify { display: inline-block; background: var(--teal); color: var(--ink); font-family: var(--display); font-weight: 700; font-size: 15px; padding: 14px 32px; border-radius: 10px; text-decoration: none; transition: opacity 0.15s ease; }
+.btn-spotify:hover { opacity: 0.88; }
+.login-note { color: var(--paper-dim); font-size: 12px; line-height: 1.6; margin-top: 24px; max-width: 34ch; margin-left: auto; margin-right: auto; }
+
 /* Masthead */
 .masthead { padding: 48px 0 20px; border-bottom: 1px solid var(--hairline-strong); }
 .brand { display: flex; align-items: center; gap: 16px; }
@@ -39,7 +53,7 @@ body { background: var(--ink); color: var(--paper); font-family: var(--body); li
 .tallymark-glyph .slash { width: 3px; height: 44px; background: var(--teal); transform: rotate(28deg); margin: 0 2px 0 -10px; }
 .masthead h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 54px); letter-spacing: -0.03em; line-height: 1; }
 .masthead h1 .mark { color: var(--teal); }
-.masthead .tagline { font-weight: 500; letter-spacing: 0.04em; font-size: 13px; color: var(--paper-dim); margin-top: 12px; }
+.tagline { font-weight: 500; letter-spacing: 0.04em; font-size: 13px; color: var(--paper-dim); }
 
 /* Tabs */
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 24px 0 4px; }

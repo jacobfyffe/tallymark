@@ -88,6 +88,11 @@ export interface SearchResult {
   works: { id: string; title: string; artist_name: string }[];
 }
 
+export interface CurrentUser {
+  userId: string;
+  spotifyUserId: string | null;
+}
+
 async function getJSON<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -108,6 +113,11 @@ async function postJSON<T>(url: string, body: unknown): Promise<T> {
 }
 
 export const apiClient = {
+  me: () => getJSON<CurrentUser>('/api/me'),
+  logout: () =>
+    fetch('/logout', { method: 'POST' }).then((r) => {
+      if (!r.ok) throw new Error('Logout failed');
+    }),
   globalChart: (week?: string) =>
     getJSON<ChartResponse>(`/api/charts/global${week ? `?week=${encodeURIComponent(week)}` : ''}`),
   personalChart: (userId: string, week?: string) =>

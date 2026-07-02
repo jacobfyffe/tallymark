@@ -31,6 +31,22 @@ function wrap(fn: (req: Request, res: Response) => Promise<void>) {
   return (req: Request, res: Response, next: NextFunction) => fn(req, res).catch(next);
 }
 
+/**
+ * Who is the currently logged-in user?
+ * Returns 401 if no session exists — the frontend uses this to decide
+ * whether to show the chart or the login page.
+ */
+api.get('/me', (req: Request, res: Response) => {
+  if (!req.session.userId) {
+    res.status(401).json({ error: 'Not logged in' });
+    return;
+  }
+  res.json({
+    userId: req.session.userId,
+    spotifyUserId: req.session.spotifyUserId ?? null,
+  });
+});
+
 api.get(
   '/charts/global',
   wrap(async (req, res) => {
