@@ -6,9 +6,12 @@
   "workspaces": ["shared/*", "packages/*", "apps/*"],
   "engines": { "node": ">=20" },
   "scripts": {
+    "dev": "concurrently --names \"orch,api,web\" --prefix-colors \"cyan,yellow,magenta\" \"npm run dev --workspace @tallymark/orchestrator\" \"npm run dev --workspace @tallymark/web-server\" \"npm run dev --workspace @tallymark/web\"",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "orchestrator:dev": "npm run dev --workspace @tallymark/orchestrator"
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }
